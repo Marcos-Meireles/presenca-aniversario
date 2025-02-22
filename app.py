@@ -4,7 +4,7 @@ from io import BytesIO
 import os
 
 # Configurações da página
-st.set_page_config(page_title="Convite de Aniversário", layout="wide")
+st.set_page_config(page_title="Convite de Aniversário - MarcolaDay", layout="wide")
 
 # Senha de acesso (altere para uma senha segura)
 SENHA_CORRETA = os.getenv("SENHA_APP")

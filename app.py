@@ -1,14 +1,52 @@
 import streamlit as st
+import gspread
+from oauth2client.service_account import ServiceAccountCredentials
 import pandas as pd
-from io import BytesIO
+import json
 import os
 
+# Carrega as credenciais da secret
+def carregar_credenciais():
+    credenciais = os.getenv("GOOGLE_CREDENTIALS")
+    if not credenciais:
+        st.error("Credenciais do Google não encontradas. Verifique as secrets.")
+        st.stop()
+    return json.loads(credenciais)
+
+# Configurações do Google Sheets
+def conectar_google_sheets():
+    # Escopo da API
+    scope = [
+        "https://spreadsheets.google.com/feeds",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+    # Use as credenciais carregadas da secret
+    creds = ServiceAccountCredentials.from_json_keyfile_dict(carregar_credenciais(), scope)
+    client = gspread.authorize(creds)
+    return client
+
+def carregar_dados(planilha):
+    worksheet = planilha.get_worksheet(0)  # Pega a primeira aba
+    return worksheet.get_all_records()
+
+def salvar_dados(planilha, dados):
+    worksheet = planilha.get_worksheet(0)  # Pega a primeira aba
+    worksheet.append_row(dados)
+    
+def criar_cabecalho(planilha):
+    worksheet = planilha.get_worksheet(0)  # Pega a primeira aba
+    cabecalho = ["Nome", "Celular", "Comparecerá", "Acompanhante"]
+    # Verifica se o cabeçalho já existe
+    if not worksheet.row_values(1):
+        worksheet.append_row(cabecalho)
+    
+    
 # Configurações da página
 st.set_page_config(page_title="Convite de Aniversário MarcolaDay", layout="wide")
 
 # Senha de acesso (altere para uma senha segura)
 SENHA_CORRETA = os.getenv("SENHA_APP")
-
 
 # Função para verificar a senha
 def verificar_senha(senha):
@@ -59,6 +97,16 @@ if 'df_confirmados' not in st.session_state:
 
 if 'df_nao_comparecerao' not in st.session_state:
     st.session_state.df_nao_comparecerao = pd.DataFrame(columns=["Nome", "Celular"])
+    
+    
+# Conecta ao Google Sheets
+try:
+    client = conectar_google_sheets()
+    planilha = client.open("presenca")  # Substitua pelo ID da sua planilha
+    criar_cabecalho(planilha)  # Cria o cabeçalho se não existir
+except Exception as e:
+    st.error(f"Erro ao conectar ao Google Sheets: {e}")
+    st.stop()
 
 # Formulário de entrada
 with st.form("convite_form"):
@@ -79,26 +127,14 @@ with st.form("convite_form"):
             st.error("Preencha os campos obrigatórios (*)")
         else:
             if comparecera == "Sim":
-                new_row = {
-                    "Nome": nome.title(),
-                    "Celular": celular,
-                    "Acompanhante": acompanhante.title() if acompanhante else "Não"
-                }
-                st.session_state.df_confirmados = pd.concat(
-                    [st.session_state.df_confirmados, pd.DataFrame([new_row])],
-                    ignore_index=True
-                )
-                st.success("Convidado adicionado à lista de confirmados!")
+                dados = [nome.title(), celular, comparecera, acompanhante.title() if acompanhante else "Não"]
             else:
-                new_row = {
-                    "Nome": nome.title(),
-                    "Celular": celular
-                }
-                st.session_state.df_nao_comparecerao = pd.concat(
-                    [st.session_state.df_nao_comparecerao, pd.DataFrame([new_row])],
-                    ignore_index=True
-                )
-                st.success("Convidado adicionado à lista de não comparecerão.")
+                dados = [nome.title(), celular, comparecera, "Não"]
+            try:
+                salvar_dados(planilha, dados)
+                st.success("Convidado adicionado com sucesso!")
+            except Exception as e:
+                st.error(f"Erro ao salvar dados: {e}")
 
 # Botão de Login
 if 'autenticado' not in st.session_state:
@@ -120,33 +156,25 @@ if not st.session_state.autenticado:
 
 # Exibe as tabelas e exportação apenas se autenticado
 if st.session_state.autenticado:
-    # Exibe as tabelas
-    if not st.session_state.df_confirmados.empty:
-        st.divider()
-        st.subheader("✅ Lista de Confirmados")
-        st.dataframe(st.session_state.df_confirmados, use_container_width=True)
+    # Carrega os dados da planilha
+    try:
+        dados = carregar_dados(planilha)
+        if dados:
+            df = pd.DataFrame(dados)
+            df_confirmados = df[df["Comparecerá"] == "Sim"]
+            df_nao_comparecerao = df[df["Comparecerá"] == "Não"]
 
-    if not st.session_state.df_nao_comparecerao.empty:
-        st.divider()
-        st.subheader("❌ Lista de Não Comparecerão")
-        st.dataframe(st.session_state.df_nao_comparecerao, use_container_width=True)
+            # Exibe as tabelas
+            if not df_confirmados.empty:
+                st.divider()
+                st.subheader("✅ Lista de Confirmados")
+                st.dataframe(df_confirmados, use_container_width=True)
 
-    # Botão para exportar Excel
-    if not st.session_state.df_confirmados.empty or not st.session_state.df_nao_comparecerao.empty:
-        st.divider()
-        
-        def to_excel(df_confirmados, df_nao_comparecerao):
-            output = BytesIO()
-            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                df_confirmados.to_excel(writer, sheet_name="Confirmados", index=False)
-                df_nao_comparecerao.to_excel(writer, sheet_name="Não Comparecerão", index=False)
-            return output.getvalue()
-        
-        excel_data = to_excel(st.session_state.df_confirmados, st.session_state.df_nao_comparecerao)
-        
-        st.download_button(
-            label="📥 Exportar para Excel",
-            data=excel_data,
-            file_name="lista_convidados.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+            if not df_nao_comparecerao.empty:
+                st.divider()
+                st.subheader("❌ Lista de Não Comparecerão")
+                st.dataframe(df_nao_comparecerao, use_container_width=True)
+        else:
+            st.info("Nenhum convidado cadastrado ainda.")
+    except Exception as e:
+        st.error(f"Erro ao carregar dados: {e}")

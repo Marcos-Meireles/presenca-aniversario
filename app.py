@@ -24,8 +24,8 @@ col1, col2 = st.columns(2)
 with col1:
     st.markdown("""
         **Data:** 15 de março de 2025  
-        **Horário:** 13:00 até eu quiser 
-        **Local:** Casa de Marlo 
+        **Horário:** 13:00 até o horário que eu quiser  
+        **Local:** Casa de Marlon
     """)
 
 with col2:

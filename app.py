@@ -43,7 +43,7 @@ def criar_cabecalho(planilha):
     
     
 # Configurações da página
-st.set_page_config(page_title="Convite de Aniversário MarcolaDay", layout="wide")
+st.set_page_config(page_title="Convite Churrasquinho MarcolaDay", layout="wide")
 
 # Senha de acesso (altere para uma senha segura)
 SENHA_CORRETA = os.getenv("SENHA_APP")
@@ -53,7 +53,7 @@ def verificar_senha(senha):
     return senha == SENHA_CORRETA
 
 # Título da aplicação
-st.title("🎉 Convite de Aniversário")
+st.title("🎉 Convite Churrasquinho")
 
 # Informações do Evento
 st.subheader("📅 Informações do Evento")
@@ -61,30 +61,30 @@ col1, col2 = st.columns(2)
 
 with col1:
     st.markdown("""
-        **Data:** 15 de março de 2025  
+        **Data:** 8 de março de 2025  
         **Horário:** 13:00 até o horário que eu quiser  
-        **Local:** Casa de Marlon
+        **Local:** Casa de Tony
     """)
 
 with col2:
     st.markdown("""
         **Endereço:**  
-        Rua Umbu, 311  
-        Bairro Campo Grande/Inhoaíba  
+        Rua Iranduba, 225  
+        Bairro Cordovil 
         Rio de Janeiro - RJ 
     """)
 
 # Mapa do Google Maps
 st.subheader("📍 Localização do Evento")
 st.markdown("""
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3675.25428941122!2d-43.57775122380676!3d-22.90398973777275!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x9be3f5e0283799%3A0x5a1b572bf933d5c!2sR.%20Umb%C3%BA%2C%20311%20-%20Inhoa%C3%ADba%2C%20Rio%20de%20Janeiro%20-%20RJ%2C%2023070-120!5e0!3m2!1spt-BR!2sbr!4v1740230173696!5m2!1spt-BR!2sbr"
-    width="100%"
-    height="450"
-    style="border:0;"
-    allowfullscreen="" 
-    loading="lazy" 
-    referrerpolicy="no-referrer-when-downgrade">
-    </iframe>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3677.497166976015!2d-43.301600199999996!3d-22.821088700000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x997b11f29b54bd%3A0x6b9dd20180e1af51!2sR.%20Iranduba%2C%20225%20-%20Cordovil%2C%20Rio%20de%20Janeiro%20-%20RJ%2C%2021250-380!5e0!3m2!1spt-BR!2sbr!4v1740498041246!5m2!1spt-BR!2sbr"
+     width="600" 
+     height="450" 
+     style="border:0;" 
+     allowfullscreen="" 
+     loading="lazy" 
+     referrerpolicy="no-referrer-when-downgrade">
+     </iframe>
 """, unsafe_allow_html=True)
 
 # Lista de Convidados

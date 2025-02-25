@@ -77,14 +77,14 @@ with col2:
 # Mapa do Google Maps
 st.subheader("📍 Localização do Evento")
 st.markdown("""
-    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3677.497166976015!2d-43.301600199999996!3d-22.821088700000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x997b11f29b54bd%3A0x6b9dd20180e1af51!2sR.%20Iranduba%2C%20225%20-%20Cordovil%2C%20Rio%20de%20Janeiro%20-%20RJ%2C%2021250-380!5e0!3m2!1spt-BR!2sbr!4v1740498041246!5m2!1spt-BR!2sbr"
-     width="600" 
-     height="450" 
-     style="border:0;" 
-     allowfullscreen="" 
-     loading="lazy" 
-     referrerpolicy="no-referrer-when-downgrade">
-     </iframe>
+    <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3677.497166976015!2d-43.301600199999996!3d-22.821088700000004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x997b11f29b54bd%3A0x6b9dd20180e1af51!2sR.%20Iranduba%2C%20225%20-%20Cordovil%2C%20Rio%20de%20Janeiro%20-%20RJ%2C%2021250-380!5e0!3m2!1spt-BR!2sbr!4v1740498602796!5m2!1spt-BR!2sbr" 
+    width="800" 
+    height="600" 
+    style="border:0;" 
+    allowfullscreen="" 
+    loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
 """, unsafe_allow_html=True)
 
 # Lista de Convidados

@@ -160,8 +160,8 @@ if st.session_state.autenticado:
         dados = carregar_dados(planilha)
         if dados:
             df = pd.DataFrame(dados)
-            df_confirmados = df[df["Comparecerá"] == "Sim"]
-            df_nao_comparecerao = df[df["Comparecerá"] == "Não"]
+            df_confirmados = df[df["Comparecerá"] == "Sim"].astype(str)
+            df_nao_comparecerao = df[df["Comparecerá"] == "Não"].astype(str)
 
             # Exibe as tabelas
             if not df_confirmados.empty:

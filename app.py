@@ -36,7 +36,7 @@ def salvar_dados(planilha, dados):
     
 def criar_cabecalho(planilha):
     worksheet = planilha.get_worksheet(0)  # Pega a primeira aba
-    cabecalho = ["Nome", "Celular", "Comparecerá", "Acompanhante"]
+    cabecalho = ["Nome", "Celular", "Comparecerá"]
     # Verifica se o cabeçalho já existe
     if not worksheet.row_values(1):
         worksheet.append_row(cabecalho)
@@ -93,7 +93,7 @@ st.subheader("📋 Lista de Convidados")
 
 # Inicializa os DataFrames na session_state
 if 'df_confirmados' not in st.session_state:
-    st.session_state.df_confirmados = pd.DataFrame(columns=["Nome", "Celular", "Acompanhante"])
+    st.session_state.df_confirmados = pd.DataFrame(columns=["Nome", "Celular"])
 
 if 'df_nao_comparecerao' not in st.session_state:
     st.session_state.df_nao_comparecerao = pd.DataFrame(columns=["Nome", "Celular"])
@@ -118,7 +118,6 @@ with st.form("convite_form"):
         
     with col2:
         comparecera = st.radio("Vai comparecer?*", ["Sim", "Não"])
-        acompanhante = st.text_input("Nome do acompanhante (se houver):")
     
     submitted = st.form_submit_button("Adicionar à lista")
     
@@ -127,9 +126,9 @@ with st.form("convite_form"):
             st.error("Preencha os campos obrigatórios (*)")
         else:
             if comparecera == "Sim":
-                dados = [nome.title(), celular, comparecera, acompanhante.title() if acompanhante else "Não"]
+                dados = [nome.title(), celular, comparecera]
             else:
-                dados = [nome.title(), celular, comparecera, "Não"]
+                dados = [nome.title(), celular, comparecera]
             try:
                 salvar_dados(planilha, dados)
                 st.success("Convidado adicionado com sucesso!")
